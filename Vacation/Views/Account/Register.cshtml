@@ -1,0 +1,21 @@
+﻿@model Vacation.Models.Account
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-controller="Account" asp-action="Register" method="post">
+    <div>
+    <label for="Mail">Email:</label>
+    <input type="email" name="mail" required />
+</div>
+<div>
+    <label for="Password">Password:</label>
+    <input type="password" name="password" required />
+</div>
+    <div>
+        <input type="submit" value="Register" />
+    </div>
+</form>

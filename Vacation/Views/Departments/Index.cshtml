@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Vacation.Models.Department>
+
+@{
+    ViewData["Title"] = "Departments";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ShortName</th>
+            <th>FullName</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var department in Model)
+        {
+            <tr>
+                <td>@department.ShortName</td>
+                <td>@department.FullName</td>
+                <td>@department.Note</td>
+            </tr>
+        }
+    </tbody>
+</table>
