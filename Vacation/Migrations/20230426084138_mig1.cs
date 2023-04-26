@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Vacation.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class mig1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -85,10 +85,11 @@ namespace Vacation.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DepartmentID = table.Column<int>(type: "int", nullable: false),
                     JobID = table.Column<int>(type: "int", nullable: false),
+                    AccountID = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -294,15 +295,15 @@ namespace Vacation.Migrations
 
             migrationBuilder.InsertData(
                 table: "Employee",
-                columns: new[] { "ID", "CreatedAt", "DepartmentID", "JobID", "LastName", "Name" },
+                columns: new[] { "ID", "AccountID", "CreatedAt", "DepartmentID", "FirstName", "JobID", "LastName" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 1, "Manager", "HR" },
-                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2, "Surname2", "Employee2" },
-                    { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2, "Surname3", "Employee3" },
-                    { 4, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2, "Surname4", "Employee4" },
-                    { 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2, "Surname5", "Employee5" },
-                    { 6, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, 2, "Surname6", "Employee6" }
+                    { 1, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "HR", 1, "Manager" },
+                    { 2, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "Employee2", 2, "Surname2" },
+                    { 3, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "Employee3", 2, "Surname3" },
+                    { 4, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "Employee4", 2, "Surname4" },
+                    { 5, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "Employee5", 2, "Surname5" },
+                    { 6, 0, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "Employee6", 2, "Surname6" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -340,7 +341,8 @@ namespace Vacation.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_EmployeeID",
                 table: "AspNetUsers",
-                column: "EmployeeID");
+                column: "EmployeeID",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",

@@ -36,11 +36,15 @@ public class AccountController : Controller
             {
                 return RedirectToAction("Index", "Home");
             }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login information.");
+            }
         }
 
-        ModelState.AddModelError(string.Empty, "Invalid login information.");
         return View();
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]

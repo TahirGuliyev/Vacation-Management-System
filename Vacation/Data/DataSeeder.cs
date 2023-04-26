@@ -1,95 +1,60 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Vacation.Models;
 
-namespace Vacation.Data
+namespace Vacation.Data;
+public class DataSeeder
 {
-    public class DataSeeder
+    public static async Task SeedData(IServiceProvider serviceProvider)
     {
-        public static async Task SeedData(IServiceProvider serviceProvider)
+        using (var context = new VacationDbContext(serviceProvider.GetRequiredService<DbContextOptions<VacationDbContext>>()))
         {
-            using var scope = serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<VacationDbContext>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Account>>();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-
-            context.Database.EnsureCreated();
-
-            if (!context.Roles.Any())
+            if (context.Users.Any())
             {
-                var roles = new Role[] { new Role { Name = "HR" }, new Role { Name = "Employee" } };
-                foreach (var role in roles)
-                {
-                    await roleManager.CreateAsync(role);
-                }
+                return;
             }
 
-            if (!context.Users.Any())
+            try
             {
-                // Create HR User
+                var userManager = serviceProvider.GetRequiredService<UserManager<Account>>();
+                var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
+
+                var roles = new List<Role>
+                {
+                    new Role { Name = "HR" },
+                    new Role { Name = "Employee" }
+                };
+
+                foreach (var role in roles)
+                {
+                    if (!await roleManager.RoleExistsAsync(role.Name))
+                    {
+                        await roleManager.CreateAsync(role);
+                    }
+                }
+
                 var user = new Account
                 {
-                    UserName = "admin",
-                    Email = "admin@example.com",
                     FirstName = "Admin",
-                    LastName = "User"
+                    LastName = "Admin",
+                    UserName = "admin@example.com",
+                    Email = "admin@example.com",
+                    EmployeeID = 1,
+                    UserRole = "HR"
                 };
 
-                var userResult = await userManager.CreateAsync(user, "Admin123!");
-                if (userResult.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(user, "HR");
-                }
-                else
-                {
-                    foreach (var error in userResult.Errors)
-                    {
-                        Console.WriteLine($"User Error: {error.Description}");
-                    }
-                }
-
-                // Create Employee User
-                var user2 = new Account
-                {
-                    UserName = "employee",
-                    Email = "employee@example.com",
-                    FirstName = "Employee",
-                    LastName = "User"
-                };
-
-                var employeeResult = await userManager.CreateAsync(user2, "Employee123!");
-                if (employeeResult.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(user2, "Employee");
-                }
-                else
-                {
-                    foreach (var error in employeeResult.Errors)
-                    {
-                        Console.WriteLine($"Employee Error: {error.Description}");
-                    }
-                }
-                await context.SaveChangesAsync();
-
-                var createdHrUser = context.Users.Single(u => u.Email == user.Email);
-                var createdEmployeeUser = context.Users.Single(u => u.Email == user2.Email);
-
-                var employee = new Employee
-                {
-                    AccountId = createdHrUser.Id.ToString()
-                };
-                context.Employees.Add(employee);
-
-                var employee2 = new Employee
-                {
-                    AccountId = createdEmployeeUser.Id.ToString()
-                };
-                context.Employees.Add(employee2);
-
-                await context.SaveChangesAsync();
+                await userManager.CreateAsync(user, "Admin@123");
+                await userManager.AddToRoleAsync(user, user.UserRole);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while seeding data: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
             }
         }
     }

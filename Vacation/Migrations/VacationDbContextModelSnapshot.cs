@@ -151,7 +151,8 @@ namespace Vacation.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("EmployeeID")
+                    b.Property<int?>("EmployeeID")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
@@ -202,7 +203,8 @@ namespace Vacation.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeID");
+                    b.HasIndex("EmployeeID")
+                        .IsUnique();
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -269,20 +271,23 @@ namespace Vacation.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<int>("AccountID")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("DepartmentID")
                         .HasColumnType("int");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("JobID")
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -298,56 +303,62 @@ namespace Vacation.Migrations
                         new
                         {
                             ID = 1,
+                            AccountID = 0,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DepartmentID = 1,
+                            FirstName = "HR",
                             JobID = 1,
-                            LastName = "Manager",
-                            Name = "HR"
+                            LastName = "Manager"
                         },
                         new
                         {
                             ID = 2,
+                            AccountID = 0,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DepartmentID = 2,
+                            FirstName = "Employee2",
                             JobID = 2,
-                            LastName = "Surname2",
-                            Name = "Employee2"
+                            LastName = "Surname2"
                         },
                         new
                         {
                             ID = 3,
+                            AccountID = 0,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DepartmentID = 2,
+                            FirstName = "Employee3",
                             JobID = 2,
-                            LastName = "Surname3",
-                            Name = "Employee3"
+                            LastName = "Surname3"
                         },
                         new
                         {
                             ID = 4,
+                            AccountID = 0,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DepartmentID = 2,
+                            FirstName = "Employee4",
                             JobID = 2,
-                            LastName = "Surname4",
-                            Name = "Employee4"
+                            LastName = "Surname4"
                         },
                         new
                         {
                             ID = 5,
+                            AccountID = 0,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DepartmentID = 2,
+                            FirstName = "Employee5",
                             JobID = 2,
-                            LastName = "Surname5",
-                            Name = "Employee5"
+                            LastName = "Surname5"
                         },
                         new
                         {
                             ID = 6,
+                            AccountID = 0,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DepartmentID = 2,
+                            FirstName = "Employee6",
                             JobID = 2,
-                            LastName = "Surname6",
-                            Name = "Employee6"
+                            LastName = "Surname6"
                         });
                 });
 
@@ -528,8 +539,8 @@ namespace Vacation.Migrations
             modelBuilder.Entity("Vacation.Models.Account", b =>
                 {
                     b.HasOne("Vacation.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeID")
+                        .WithOne("Account")
+                        .HasForeignKey("Vacation.Models.Account", "EmployeeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -584,6 +595,9 @@ namespace Vacation.Migrations
 
             modelBuilder.Entity("Vacation.Models.Employee", b =>
                 {
+                    b.Navigation("Account")
+                        .IsRequired();
+
                     b.Navigation("VacationRequests");
                 });
 

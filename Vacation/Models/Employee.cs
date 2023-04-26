@@ -8,7 +8,7 @@ public class Employee : BaseEntity
     public string LastName { get; set; }
     public int DepartmentID { get; set; }
     public int JobID { get; set; }
-    public string AccountId { get; set; }
+    public int AccountID { get; set; }
     public Account Account { get; set; }
 
     public virtual Job Job { get; set; }
